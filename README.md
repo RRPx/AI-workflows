@@ -177,48 +177,6 @@ workflow_jsons/write a blog post(could be any medium) and send it to telegram wi
 
 ---
 
-## 8️⃣ Workflow 8
-
-<p align="center">
-<img src="./workflow_images/<workflow-image>.png" width="850">
-</p>
-
-**Import**
-
-```
-workflow_jsons/<workflow-json>.json
-```
-
----
-
-## 9️⃣ Workflow 9
-
-<p align="center">
-<img src="./workflow_images/<workflow-image>.png" width="850">
-</p>
-
-**Import**
-
-```
-workflow_jsons/<workflow-json>.json
-```
-
----
-
-## 🔟 Workflow 10
-
-<p align="center">
-<img src="./workflow_images/<workflow-image>.png" width="850">
-</p>
-
-**Import**
-
-```
-workflow_jsons/<workflow-json>.json
-```
-
----
-
 # 🛠 Tech Stack
 
 | Category | Technologies |

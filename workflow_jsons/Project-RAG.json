@@ -1,0 +1,407 @@
+{
+  "name": "Project: RAG",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        800,
+        432
+      ],
+      "id": "a6336f6e-0047-4628-bf2a-6ae3c01553c0",
+      "name": "When chat message received",
+      "webhookId": "6787a950-1c83-4cc6-b1f3-6014be9991da"
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "You are a helpful assistant for a  tesla, any queries related to tesla's financial information, please answer clearly and to the point"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        1088,
+        368
+      ],
+      "id": "b2f2d4ca-d060-47c8-bf6b-13d6c5b042c5",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "openai/gpt-oss-20b:free",
+          "mode": "list",
+          "cachedResultName": "openai/gpt-oss-20b:free"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        1024,
+        624
+      ],
+      "id": "3f0cfcc3-a7fb-4daf-9846-079d6e0bd192",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "Te6RE5bIx8fW5Uj7",
+          "name": "OpenAI account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolName": "documents",
+        "toolDescription": "Use this to get information on the menu",
+        "tableName": {
+          "__rl": true,
+          "value": "documents",
+          "mode": "list",
+          "cachedResultName": "documents"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+      "typeVersion": 1.1,
+      "position": [
+        1280,
+        624
+      ],
+      "id": "321f1e85-540d-4a18-abf7-40aeed303bc6",
+      "name": "Supabase Vector Store",
+      "credentials": {
+        "supabaseApi": {
+          "id": "JegJwMilkxhiq6eV",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "insert",
+        "tableName": {
+          "__rl": true,
+          "value": "documents",
+          "mode": "list",
+          "cachedResultName": "documents"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+      "typeVersion": 1.1,
+      "position": [
+        -32,
+        368
+      ],
+      "id": "0aec7c70-a4cf-4743-85b0-8df18ad46d3d",
+      "name": "Supabase Vector Store1",
+      "credentials": {
+        "supabaseApi": {
+          "id": "JegJwMilkxhiq6eV",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -64,
+        592
+      ],
+      "id": "99686951-dcd7-4550-8d73-1b13b02a71ba",
+      "name": "Embeddings OpenAI",
+      "credentials": {
+        "openAiApi": {
+          "id": "dB2PnxH05fwBUofD",
+          "name": "n8n free OpenAI API credits"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "dataType": "binary",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "typeVersion": 1,
+      "position": [
+        64,
+        592
+      ],
+      "id": "2bd7411b-5eca-4dc2-8a4e-4c009ef632ba",
+      "name": "Default Data Loader"
+    },
+    {
+      "parameters": {
+        "chunkSize": 2000,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.textSplitterRecursiveCharacterTextSplitter",
+      "typeVersion": 1,
+      "position": [
+        144,
+        800
+      ],
+      "id": "b84bce5a-51f1-49de-bc02-d33781a8ffab",
+      "name": "Recursive Character Text Splitter"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        1360,
+        800
+      ],
+      "id": "de3077f2-8c88-4cd5-855a-2183e6b8e773",
+      "name": "Embeddings OpenAI1",
+      "credentials": {
+        "openAiApi": {
+          "id": "dB2PnxH05fwBUofD",
+          "name": "n8n free OpenAI API credits"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.4,
+      "position": [
+        1168,
+        624
+      ],
+      "id": "31c4c002-5d95-4dfe-b769-7aed0d0d4dd4",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "triggerOn": "specificFolder",
+        "folderToWatch": {
+          "__rl": true,
+          "value": "1MdNC0uv_X2KpcHJjYnbMwk2Sxo5Kvjzq",
+          "mode": "list",
+          "cachedResultName": "tesla report",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1MdNC0uv_X2KpcHJjYnbMwk2Sxo5Kvjzq"
+        },
+        "event": "fileCreated",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDriveTrigger",
+      "typeVersion": 1,
+      "position": [
+        -512,
+        480
+      ],
+      "id": "c63bdb4c-ef0e-4f33-a5f2-215c3ab86af3",
+      "name": "Google Drive Trigger",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "2hXTYUM9SORbJ5E3",
+          "name": "Google Drive OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $json.id }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -288,
+        480
+      ],
+      "id": "99990900-eafe-4cae-b231-1f43912356f5",
+      "name": "Google Drive",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "2hXTYUM9SORbJ5E3",
+          "name": "Google Drive OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## RAG: Data Ingestion to Supabase Vector\nPolls in each minute for new data that gets uploaded to drive, it then vectorize those information into efficient chunks, it uses openAI embedding model.\n\n**Pinecone vector store can also be used in place of Supabase**\n",
+        "height": 768,
+        "width": 1168
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -624,
+        176
+      ],
+      "typeVersion": 1,
+      "id": "39c62520-ea42-4977-9977-ed94da7d0c90",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "## RAG: Pulling data from vector store for question answering\n\nAfter data ingestion we can decide to go for asking specific questions regarding the data ingested in the first workflow\nWe can use in-built n8n chat or for production grade systems we can use our own frontend and connect this chat model\nfor our own business purposes. We can feed our company data / meaningful internal data that the model will use later\nto answer on. Production grade systems might incorporate external database systems for better memory management.\n",
+        "height": 768,
+        "width": 1168
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        592,
+        176
+      ],
+      "typeVersion": 1,
+      "id": "9ac1e8cb-95e1-4ab0-8952-dda35d0e39a2",
+      "name": "Sticky Note1"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Supabase Vector Store": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Supabase Vector Store1",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Default Data Loader": {
+      "ai_document": [
+        [
+          {
+            "node": "Supabase Vector Store1",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Recursive Character Text Splitter": {
+      "ai_textSplitter": [
+        [
+          {
+            "node": "Default Data Loader",
+            "type": "ai_textSplitter",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI1": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Supabase Vector Store",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Drive Trigger": {
+      "main": [
+        [
+          {
+            "node": "Google Drive",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Drive": {
+      "main": [
+        [
+          {
+            "node": "Supabase Vector Store1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "8735b11a-d126-4a87-96cc-c0a63b04a3c8",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "fd3d7f7361ef4aa7022d35a8d62b85b1f14665194f7a1bced3ab05951f2111da"
+  },
+  "nodeGroups": [],
+  "id": "HKjRW41e5hGjhGnT",
+  "tags": []
+}

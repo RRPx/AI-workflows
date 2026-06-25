@@ -1,0 +1,306 @@
+{
+  "name": "HITL [telegram]",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        4640,
+        2608
+      ],
+      "id": "58f690ad-d541-47af-9d64-afec284d153d",
+      "name": "Telegram Trigger",
+      "webhookId": "a1f66251-6783-4522-b230-099417a08d2a"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.message.text }}",
+        "options": {
+          "systemMessage": "You are a tweet writer. Write a tweet based on the user input. Output only the tweet content and nothing else.\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        4864,
+        2608
+      ],
+      "id": "75b27e18-510f-4156-aa28-b8f04ad5830d",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4.1-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-4.1-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        5520,
+        2688
+      ],
+      "id": "f8c8162d-1cdc-4a23-8677-aaea5c8e9de9",
+      "name": "OpenAI Chat Model"
+    },
+    {
+      "parameters": {
+        "operation": "sendAndWait",
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "message": "=This is the tweet made for you, please check\n--------------------------------------------\n\n{{ $(\"AI Agent1\").isExecuted ? $(\"AI Agent1\").item.json.output : $(\"AI Agent\").item.json.output }}",
+        "responseType": "freeText",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        5216,
+        2608
+      ],
+      "id": "c798efad-8d6e-4dc0-9033-181d36970ecf",
+      "name": "Send message and wait for response",
+      "webhookId": "b0d80d1d-0ad5-41e7-94c8-76170dfebd3f"
+    },
+    {
+      "parameters": {
+        "inputText": "={{ $json.data.text }}",
+        "categories": {
+          "categories": [
+            {
+              "category": "approved",
+              "description": "The user agrees with the tweet"
+            },
+            {
+              "category": "disapproves",
+              "description": "The user doesn't like the tweet and wants modification"
+            },
+            {
+              "category": "end",
+              "description": "The user wants to end the process"
+            }
+          ]
+        },
+        "options": {
+          "enableAutoFixing": true
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.textClassifier",
+      "typeVersion": 1.1,
+      "position": [
+        5440,
+        2432
+      ],
+      "id": "478a79f9-ea2a-452f-a0de-3bed4d75cf1b",
+      "name": "Text Classifier"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "Tweet has been successfully sent",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        5856,
+        2240
+      ],
+      "id": "dd6f3bb6-5fcb-4721-8f53-2790ed3b1524",
+      "name": "Send a text message",
+      "webhookId": "39d93fed-66cf-4733-a498-ad4169b78f84"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "Tweet discarded",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        5856,
+        2432
+      ],
+      "id": "b5f6fca7-07fa-4b88-b7b5-c3bdf1accae4",
+      "name": "Send a text message1",
+      "webhookId": "d5604565-8e42-450e-9cd7-573b209b7434"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Previous tweet:\n {{ $('AI Agent').item.json.output }}\n\n{{ $json.data.text }}\n",
+        "options": {
+          "systemMessage": "You are a reviewer agent. You take the initial tweet and the user input, and update the tweet accordingly. don't add anything extra\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        5792,
+        2624
+      ],
+      "id": "541bc0dd-e56a-4edc-8a5e-89e84bd6dd4f",
+      "name": "AI Agent1"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        6144,
+        2704
+      ],
+      "id": "bb8cb481-2d2c-4cf1-9ec8-c4b90d1116ca",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "content": "##Tweet writter\nWhen user messages in telegram to create a twitter message the AI agent writes the tweets and sends it to user for checking before posting to X. If human disapproves it it circles again meaning generates tweet again and sends to telegram bot.\nWhen human approves it can set the tweet as valid and post it. Due to X api limitation this part was not implemented in here.",
+        "height": 784,
+        "width": 1872
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        4512,
+        2176
+      ],
+      "typeVersion": 1,
+      "id": "d0c4b118-6724-4d42-acb6-cb4d61dac1ff",
+      "name": "Sticky Note"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Text Classifier",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "AI Agent1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Send message and wait for response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send message and wait for response": {
+      "main": [
+        [
+          {
+            "node": "Text Classifier",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Text Classifier": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "AI Agent1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send a text message1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent1": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Send message and wait for response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "aa81df6f-1fe3-498c-99da-cf7cf89ba75f",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "6d49bf171842f03ac44f0a8ad811c6d5c6bf09c6c974811619c1aa632b6c98ca"
+  },
+  "nodeGroups": [],
+  "id": "BR2n9DtgMQ7t8LAq",
+  "tags": []
+}

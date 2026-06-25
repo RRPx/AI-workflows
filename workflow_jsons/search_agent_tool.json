@@ -1,0 +1,135 @@
+{
+  "name": "search_agent_tool",
+  "nodes": [
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{$json.query}}",
+        "options": {
+          "systemMessage": "=You are a helpful search agent, you've access to serpAPI tools to extract  information from. use current date and time in the search query of serpapi to get up to date latest information\n\nuse current date and time {{ $now }} in order to retrieve latest information\n\nmake sure generated response has no vague responses, use clear information to answer on questions"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        224,
+        0
+      ],
+      "id": "9abe2e9d-95e3-4088-ab97-b76bc638f697",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "inputSource": "passthrough"
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "c484a983-58ef-4380-ad57-4a2661adaecc",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "q": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Search_Query__q_', ``, 'string') }}",
+        "location": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Location__location_', ``, 'string') }}",
+        "additionalFields": {},
+        "requestOptions": {}
+      },
+      "type": "n8n-nodes-serpapi.serpApiTool",
+      "typeVersion": 1,
+      "position": [
+        368,
+        224
+      ],
+      "id": "e8f62a3f-77f4-4381-91ed-d520221a8405",
+      "name": "serpAPI",
+      "credentials": {
+        "serpApi": {
+          "id": "Cbvi77oogvqfE34v",
+          "name": "SerpApi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemma-4-31b-it",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        240,
+        224
+      ],
+      "id": "94865c62-c284-4ad8-951a-b9aa9d5271d8",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "LujZKhCsiZWbnXUM",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    }
+  ],
+  "pinData": {
+    "When Executed by Another Workflow": [
+      {
+        "json": {
+          "query": "fifa score today"
+        }
+      }
+    ]
+  },
+  "connections": {
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "serpAPI": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "e52fa03f-1836-43f2-85d3-d4d2806eb575",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "6d49bf171842f03ac44f0a8ad811c6d5c6bf09c6c974811619c1aa632b6c98ca"
+  },
+  "nodeGroups": [],
+  "id": "VNq8T8omR7u2hP0g",
+  "tags": []
+}

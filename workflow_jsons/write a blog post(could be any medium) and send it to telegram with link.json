@@ -1,0 +1,242 @@
+{
+  "name": "write a blog post(could be any medium) and send it to telegram with link",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        0,
+        0
+      ],
+      "id": "eb4c6983-9ab6-4b0f-8245-aedf3cad0118",
+      "name": "Telegram Trigger",
+      "webhookId": "869164e2-66ac-492f-8c01-705ae83a9ee7"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.message.text }}",
+        "options": {
+          "systemMessage": "process the prompt message with each word separated by +"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        224,
+        0
+      ],
+      "id": "19aaa3e6-f0b4-40d6-b2fd-64f0ad1d3a5f",
+      "name": "Search query agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "nvidia/nemotron-nano-9b-v2:free",
+          "mode": "list",
+          "cachedResultName": "nvidia/nemotron-nano-9b-v2:free"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        320,
+        240
+      ],
+      "id": "aa7bcee9-46b7-4580-9283-ab847650d6b9",
+      "name": "OpenAI Chat Model"
+    },
+    {
+      "parameters": {
+        "url": "https://serpapi.com/search?engine=google",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "api_key",
+              "value": "8587a1a845b1eb9848c6c9126b7f090c0ba386453f290b6e6465cbe6c1b244c4"
+            },
+            {
+              "name": "q",
+              "value": "={{ $json.output }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        576,
+        0
+      ],
+      "id": "8e66ed44-d5b7-4f98-b5e5-8f196eae8b45",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.related_questions }}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "take all the necessary information and write a note on it, output should match with provided structure"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        800,
+        0
+      ],
+      "id": "c534d11f-a013-45d8-8328-dc17ed784d76",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n\t\"title\": \"blog title\",\n  \"content\": \"blog content\"\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        976,
+        208
+      ],
+      "id": "0a68f72a-159b-4da5-956b-4610b257e0b9",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "={{ $json.output.title }}\n------------------------------------------------\n{{ $json.output.content }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1152,
+        16
+      ],
+      "id": "1340c2a1-bed6-4034-b91b-2105419dbe10",
+      "name": "Send a text message",
+      "webhookId": "a307e12f-1ca7-47b2-81d3-54d61b74ad1d",
+      "credentials": {
+        "telegramApi": {
+          "id": "V9Y7nqerWWFOzKcg",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Writes a blog post, can post it on social media and send the confirmation to telegram bot",
+        "height": 560,
+        "width": 1568
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -144,
+        -160
+      ],
+      "typeVersion": 1,
+      "id": "f5e809b9-fdbd-4af9-a5dd-86375f81154a",
+      "name": "Sticky Note"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "Search query agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Search query agent",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search query agent": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "da310c99-8f92-48b7-994c-04371b410883",
+  "meta": {
+    "instanceId": "6d49bf171842f03ac44f0a8ad811c6d5c6bf09c6c974811619c1aa632b6c98ca"
+  },
+  "nodeGroups": [],
+  "id": "js3UhT15JRUO97RP",
+  "tags": []
+}

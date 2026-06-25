@@ -48,7 +48,7 @@ Instead of being a single workflow, it consists of **5 interconnected workflows*
 ## 🏗 Overall Architecture
 
 <p align="center">
-<img src="./workflow_images/5 workflows.png" width="1000">
+<img src="./workflow_images/telegram bulk - subworkflows.png" width="1000">
 </p>
 
 ---
@@ -56,7 +56,7 @@ Instead of being a single workflow, it consists of **5 interconnected workflows*
 ## ⚙️ Subworkflow Architecture
 
 <p align="center">
-<img src="./workflow_images/telegram bulk - subworkflows.png" width="1000">
+<img src="./workflow_images/5 workflows.png" width="1000">
 </p>
 
 ### Highlights

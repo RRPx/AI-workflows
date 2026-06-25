@@ -9,7 +9,6 @@ A curated collection of AI-powered workflows demonstrating **LLMs, RAG, Human-in
 <p>
 <img src="https://img.shields.io/badge/n8n-Automation-EA4B71?style=for-the-badge&logo=n8n&logoColor=white">
 <img src="https://img.shields.io/badge/AI-Powered-4A90E2?style=for-the-badge">
-<img src="https://img.shields.io/badge/Open%20Source-Portfolio-28A745?style=for-the-badge">
 </p>
 
 </div>

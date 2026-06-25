@@ -4,7 +4,7 @@ A curated collection of production-ready n8n workflows with visual previews and 
 
 ## Workflows
 
-### 1. Lead Automation Workflow
+### 1. Voice Assisted Telegram Bot
 
 <p align="center">
   <img src="./workflow_images/telegram%20bulk%20-%20subworkflows.png" alt="Voice Assisted Telegram Bot" width="auto">
